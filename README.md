@@ -2,7 +2,7 @@
 
 deploy a React app to k8s in a multi-environment setup (kubectl, helm, kustomize, skaffold)
 
-## Docker Image
+## Docker
 
 - To build the docker image
 
@@ -26,10 +26,37 @@ docker push anissnoussi/multi-stage-react-app-example:latest
 
 ## Kubernetes
 
+- Create a configMap on the fly:
+
+  - For dev
+
+  ```
+  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/dev.properties
+  ```
+
+  - For prod
+
+  ```
+  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/prod.properties
+  ```
+
 - deploy the app
 
 ```
 kubectl apply -f k8s/deploy-to-kubernetes.yaml
+```
+
+- verify that config.js has been replaced:
+
+```bash
+#first export list the pod holding our application
+export MY_POD=`kubectl get pods | grep multi-stage-react-app-example | cut -f1 -d ' '`
+
+# connect to shell in alpine image
+kubectl exec -it $MY_POD -- /bin/sh
+
+# display content of the config.js file
+less /usr/share/nginx/html/config.js
 ```
 
 - access the deployed app :
@@ -41,13 +68,3 @@ kubectl apply -f k8s/deploy-to-kubernetes.yaml
 ```
 kubectl delete -f k8s/deploy-to-kubernetes.yaml
 ```
-
-- Create a configMap on the fly:
-  - For dev
-  ```
-  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/dev.properties -o yaml
-  ```
-  - For prod
-  ```
-  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/prod.properties -o yaml
-  ```
