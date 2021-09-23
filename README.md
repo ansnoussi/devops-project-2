@@ -40,13 +40,13 @@ docker push anissnoussi/multi-stage-react-app-example:latest
   kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/prod.properties
   ```
 
-- deploy the app
+- Deploy the app
 
 ```
 kubectl apply -f k8s/deploy-to-kubernetes.yaml
 ```
 
-- verify that config.js has been replaced:
+- Verify that config.js has been replaced:
 
 ```bash
 #first export list the pod holding our application
@@ -59,11 +59,11 @@ kubectl exec -it $MY_POD -- /bin/sh
 less /usr/share/nginx/html/config.js
 ```
 
-- access the deployed app :
+- Access the deployed app :
   1- with port forwarding `kubectl port-forward svc/multi-stage-react-app-example 3001:80`
   2- if using minikube : `minikube service --url multi-stage-react-app-example`
 
-- to delete the app :
+- To delete the app :
 
 ```
 kubectl delete -f k8s/deploy-to-kubernetes.yaml
@@ -75,19 +75,19 @@ Kustomize is a standalone tool to customize Kubernetes objects through a kustomi
 With Kustomize you define base resources in the so called bases (cross cutting concerns available in environments) and in the overlays the properties that are specific for the different deployments.
 We will use Kustomize to change the number of replicas to 2 in prod.
 
-- check the generated resources before deploying
+- Check the generated resources before deploying
 
 ```
 kubectl kustomize kustomize/overlays/dev
 ```
 
-- apply the generated dev app
+- Apply the generated dev app
 
 ```
 kubectl apply -k kustomize/overlays/dev
 ```
 
-- delete the dev app
+- Delete the dev app
 
 ```
 kubectl delete -k kustomize/overlays/dev
@@ -109,38 +109,79 @@ helm create helm-chart
 helm lint helm-chart
 ```
 
-- to execute a dry-run to see the generated resources from the chart
+- To execute a dry-run to see the generated resources from the chart
 
 ```
 helm install -n local-release helm-chart/ --dry-run --generate-name
 ```
 
-- to deploy the chart
+- To deploy the chart
 
 ```
 helm install helm-chart/ --generate-name
 ```
 
-- deploy with dev values
+- Deploy with dev values
 
 ```
 helm upgrade dev-release ./helm-chart/ --install --force --values helm-chart/config-values/config-dev.yaml
 ```
 
-- delete the dev release
+- Delete the dev release
 
 ```
 helm delete --purge dev-release
 ```
 
-- to list the installed charts
+- To list the installed charts
 
 ```
 helm list
 ```
 
-- to delete the chart
+- To delete the chart
 
 ```
 helm delete <chart_name_from_previous_command>
+```
+
+## Skaffold
+
+Skaffold is a command line tool that facilitates continuous development for Kubernetes applications. You can iterate on your application source code locally then deploy to local or remote Kubernetes clusters. Skaffold handles the workflow for building, pushing and deploying your application. It also provides building blocks and describe customizations for a CI/CD pipeline.
+The configuration for Skaffold in defined in the skaffold.yaml file in the root directory of the project.
+
+- To run Skaffold (the --tail option tails the logs in the container)
+
+```
+skaffold run --tail
+```
+
+- Delete local deployment with Skaffold
+
+```
+skaffold delete
+```
+
+The `skaffold run` command, standard mode, instructs Skaffold to build and deploy your application **exactly once**.
+
+running `skaffold dev` will enables the monitoring of the source repository, so that every time you make changes to the source code, Skaffold will build and deploy your application.
+
+you can also specify the `--port-forward`, which will port forward your service to a port chosen by Skaffold.
+
+- Run in dev mode
+
+```
+skaffold dev --port-forward
+```
+
+- Deploy to other environment with Skaffold profiles (defined in the profiles section in `skaffold.yaml`)
+
+```
+skaffold run -p kustomize-prod
+```
+
+- To delete the new enviroment
+
+```
+skaffold delete -p kustomize-prod
 ```

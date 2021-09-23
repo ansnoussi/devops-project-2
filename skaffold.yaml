@@ -1,0 +1,26 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+build:
+  artifacts:
+    - image: anissnoussi/multi-stage-react-app-example
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  kustomize:
+    path: kustomize/overlays/local
+portForward:
+  - resourceType: service
+    resourceName: multi-stage-react-app-example
+    port: 80
+    localPort: 3001
+profiles:
+  - name: native-kubernetes
+    deploy:
+      kubectl:
+        manifests:
+          - kubernetes/*
+
+  - name: kustomize-prod
+    deploy:
+      kustomize:
+        path: kustomize/overlays/prod
