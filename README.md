@@ -41,3 +41,13 @@ kubectl apply -f k8s/deploy-to-kubernetes.yaml
 ```
 kubectl delete -f k8s/deploy-to-kubernetes.yaml
 ```
+
+- Create a configMap on the fly:
+  - For dev
+  ```
+  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/dev.properties -o yaml
+  ```
+  - For prod
+  ```
+  kubectl create configmap multi-stage-react-app-example-config --from-file=config.js=env/prod.properties -o yaml
+  ```
