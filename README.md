@@ -2,31 +2,42 @@
 
 deploy a React app to k8s in a multi-environment setup (kubectl, helm, kustomize, skaffold)
 
-## Available Scripts
+## Docker Image
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- To build the docker image
 
-In the project directory, you can run:
+```
+docker build --tag multi-stage-react-app-example:latest .
+```
 
-### `yarn start`
+- To run in Docker
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+docker run -p 3001:80 multi-stage-react-app-example:latest
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Push to a container registry (Docker hub in this case)
 
-### `yarn test`
+```
+docker tag multi-stage-react-app-example anissnoussi/multi-stage-react-app-example:latest
+docker push anissnoussi/multi-stage-react-app-example:latest
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
 
-### `yarn build`
+## Kubernetes
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- deploy the app
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+kubectl apply -f k8s/deploy-to-kubernetes.yaml
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- access the deployed app :
+  1- with port forwarding `kubectl port-forward svc/multi-stage-react-app-example 3001:80`
+  2- if using minikube : `minikube service --url multi-stage-react-app-example`
+
+- to delete the app :
+
+```
+kubectl delete -f k8s/deploy-to-kubernetes.yaml
+```
