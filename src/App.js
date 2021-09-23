@@ -17,7 +17,7 @@ function App() {
         justifyContent: "center",
       }}
     >
-      environment: <b>{window.REACT_APP_ENVIRONMENT}</b>
+      environment: &nbsp; <b>{window.REACT_APP_ENVIRONMENT}</b>
     </div>
   );
 }
