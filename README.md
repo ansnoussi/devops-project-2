@@ -68,3 +68,27 @@ less /usr/share/nginx/html/config.js
 ```
 kubectl delete -f k8s/deploy-to-kubernetes.yaml
 ```
+
+## Kustomize
+
+Kustomize is a standalone tool to customize Kubernetes objects through a kustomization file.
+With Kustomize you define base resources in the so called bases (cross cutting concerns available in environments) and in the overlays the properties that are specific for the different deployments.
+We will use Kustomize to change the number of replicas to 2 in prod.
+
+- check the generated resources before deploying
+
+```
+kubectl kustomize kustomize/overlays/dev
+```
+
+- apply the generated dev app
+
+```
+kubectl apply -k kustomize/overlays/dev
+```
+
+- delete the dev app
+
+```
+kubectl delete -k kustomize/overlays/dev
+```
