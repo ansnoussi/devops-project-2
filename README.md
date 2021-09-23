@@ -92,3 +92,55 @@ kubectl apply -k kustomize/overlays/dev
 ```
 kubectl delete -k kustomize/overlays/dev
 ```
+
+## Helm
+
+Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes.
+
+- To create a basic Helm chart template
+
+```
+helm create helm-chart
+```
+
+- To lint the Helm chart
+
+```
+helm lint helm-chart
+```
+
+- to execute a dry-run to see the generated resources from the chart
+
+```
+helm install -n local-release helm-chart/ --dry-run --generate-name
+```
+
+- to deploy the chart
+
+```
+helm install helm-chart/ --generate-name
+```
+
+- deploy with dev values
+
+```
+helm upgrade dev-release ./helm-chart/ --install --force --values helm-chart/config-values/config-dev.yaml
+```
+
+- delete the dev release
+
+```
+helm delete --purge dev-release
+```
+
+- to list the installed charts
+
+```
+helm list
+```
+
+- to delete the chart
+
+```
+helm delete <chart_name_from_previous_command>
+```
